@@ -28,6 +28,11 @@ public:
      */
     void testGenerateSigmaPointPrediction();
 
+    /**
+     * Run the test to predict the mean and covariance during the update step (from the predicted sigma points).
+     */
+    void testPredictMeanAndCovariance();
+
 private:
 
     /**

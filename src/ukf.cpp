@@ -33,20 +33,26 @@ UKF::UKF() :
   use_laser_ (true),
   // if this is false, radar measurements will be ignored (except during init)
   use_radar_ (true),
+  n_x_(5),
+  n_aug_(7),
   // initial state vector
-  x_ (VectorXd(5)),
+  x_ (VectorXd(n_x_)),
   // initial covariance matrix
-  P_ (MatrixXd(5, 5)),
+  P_ (MatrixXd(n_x_, n_x_)),
   // Process noise standard deviation longitudinal acceleration in m/s^2
   std_a_ (30),
   // Process noise standard deviation yaw acceleration in rad/s^2
   std_yawdd_ (30),
   //weights
-  //weights_(),
-  n_x_(5),
-  n_aug_(7),
-  lambda_(3 - n_x_)
-{}
+  weights_(VectorXd(2*n_aug_+1)),
+  lambda_(3 - n_aug_)
+{
+  // set weights
+  weights_(0) = lambda_ / (lambda_ + n_aug_);
+  for (int i = 1; i < 2*n_aug_+1; ++i){
+    weights_[i] = 1./2./(lambda_+n_aug_);
+  }
+}
 
 UKF::~UKF() {}
 
@@ -67,6 +73,7 @@ void UKF::Prediction(double delta_t) {
   MatrixXd Xsig_aug;
   generateAugmentedSigmaPointMatrix(Xsig_aug);
   generateSigmaPointPrediction(Xsig_aug, delta_t);
+  generatePredictedMeanAndCovariance();
   
 }
 
@@ -160,6 +167,20 @@ void UKF::generateSigmaPointPrediction ( const Eigen::MatrixXd & Xsig_aug, doubl
       }
   }
 
+}
+
+void UKF::generatePredictedMeanAndCovariance() {
+  // predict state mean
+  
+  x_ = VectorXd::Zero(n_x_);
+  P_ = MatrixXd::Zero(n_x_, n_x_);
+
+    for (int i = 0; i < 2*n_aug_+1; ++i) {
+        x_ += weights_[i] * Xsig_pred_.col(i);
+    }
+    for (int i = 0; i < 2*n_aug_+1; ++i) {
+        P_ += weights_[i] * (Xsig_pred_.col(i) - x_) * (Xsig_pred_.col(i) - x_).transpose();
+    }
 }
 
 void UKF::UpdateLidar(MeasurementPackage meas_package) {

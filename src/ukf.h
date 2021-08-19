@@ -51,6 +51,12 @@ class UKF {
   // if this is false, radar measurements will be ignored (except for init)
   bool use_radar_;
 
+  // State dimension
+  int n_x_;
+
+  // Augmented state dimension
+  int n_aug_;
+
   // state vector: [pos1 pos2 vel_abs yaw_angle yaw_rate] in SI units and rad
   Eigen::VectorXd x_;
 
@@ -87,12 +93,6 @@ class UKF {
   // Weights of sigma points
   Eigen::VectorXd weights_;
 
-  // State dimension
-  int n_x_;
-
-  // Augmented state dimension
-  int n_aug_;
-
   // Sigma point spreading parameter
   double lambda_;
 
@@ -116,6 +116,11 @@ class UKF {
      * @param delta_t [in] time step in seconds
      */
     void generateSigmaPointPrediction ( const Eigen::MatrixXd & Xsig_aug, double delta_t);
+
+    /**
+     * Generate the new mean and covariance from the sigma point prediction. This function relies entirely on the internal state.
+     */
+    void generatePredictedMeanAndCovariance();
 
 };
 

@@ -16,6 +16,7 @@ int main (int argc, char * argv[]) {
     test.testGenerateSigmaPointMatrix();
     test.testGenerateAugmentedSigmaPointMatrix();
     test.testGenerateSigmaPointPrediction();
+    test.testPredictMeanAndCovariance();
     return 0;
 }
 
