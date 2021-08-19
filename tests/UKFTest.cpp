@@ -184,6 +184,28 @@ void UKFTest::testPredictMeanAndCovariance() {
     std::cout << "Predict mean and covariance test passed." << std::endl;
 }
 
+void UKFTest::testRadarMeasurementPrediction() {
+    std::cout << "Testing Radar measurement prediction..." << std::endl;
+    std::cout << "Radar measurement prediction test NOT IMPLEMENTED" << std::endl;
+}
+
+void UKFTest::testRadarMeasurementUpdate() {
+
+    std::cout << "Testing Radar measurement prediction..." << std::endl;
+    std::cout << "Radar measurement update test NOT IMPLEMENTED" << std::endl;
+}
+
+void UKFTest::testLidarMeasurementPrediction() {
+    std::cout << "Testing Lidar measurement prediction..." << std::endl;
+    std::cout << "Lidar measurement prediction test NOT IMPLEMENTED" << std::endl;
+}
+
+void UKFTest::testLidarMeasurementUpdate() {
+    std::cout << "Testing Lidar measurement update..." << std::endl;
+    std::cout << "Lidar measurement update test NOT IMPLEMENTED" << std::endl;
+}
+
+
 bool UKFTest::almostEqual (double a, double b) const {
     return std::abs(a - b) < SMALL_VALUE;
 }

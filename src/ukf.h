@@ -20,7 +20,7 @@ class UKF {
    * ProcessMeasurement
    * @param meas_package The latest measurement data of either radar or laser
    */
-  void ProcessMeasurement(MeasurementPackage meas_package);
+  void ProcessMeasurement(const MeasurementPackage& meas_package);
 
   /**
    * Prediction Predicts sigma points, the state, and the state covariance
@@ -28,18 +28,6 @@ class UKF {
    * @param delta_t Time between k and k+1 in s
    */
   void Prediction(double delta_t);
-
-  /**
-   * Updates the state and the state covariance matrix using a laser measurement
-   * @param meas_package The measurement at k+1
-   */
-  void UpdateLidar(MeasurementPackage meas_package);
-
-  /**
-   * Updates the state and the state covariance matrix using a radar measurement
-   * @param meas_package The measurement at k+1
-   */
-  void UpdateRadar(MeasurementPackage meas_package);
 
 
   // initially set to false, set to true in first call of ProcessMeasurement
@@ -121,6 +109,32 @@ class UKF {
      * Generate the new mean and covariance from the sigma point prediction. This function relies entirely on the internal state.
      */
     void generatePredictedMeanAndCovariance();
+
+    /**
+     * Updates the state and the state covariance matrix using a laser measurement
+     * @param meas_package The measurement at k+1
+     */
+    void UpdateLidar(const MeasurementPackage& meas_package);
+
+    /**
+     * Updates the state and the state covariance matrix using a radar measurement
+     * @param meas_package The measurement at k+1
+     */
+    void UpdateRadar(const MeasurementPackage& meas_package);
+
+    /**
+     * Get the predicted radar measurement state.
+     * @param z_out [out] predicted radar measurement mean
+     * @param S_out [out] predicted radar covariance state
+     */
+    void predictRadarMeasurement( Eigen::VectorXd & z_out, Eigen::MatrixXd & S_out);
+
+    /**
+     * Get the predicted LIDAR measurement state.
+     * @param z_out [out] predicted lidar measurement mean
+     * @param X_out [out] predicted lidar covariance state
+     */
+    void predictLidarMeasurement( Eigen::VectorXd & z_out, Eigen::MatrixXd & S_out);
 
 };
 

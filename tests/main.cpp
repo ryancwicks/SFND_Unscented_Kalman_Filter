@@ -17,6 +17,10 @@ int main (int argc, char * argv[]) {
     test.testGenerateAugmentedSigmaPointMatrix();
     test.testGenerateSigmaPointPrediction();
     test.testPredictMeanAndCovariance();
+    test.testLidarMeasurementPrediction();
+    test.testLidarMeasurementUpdate();
+    test.testRadarMeasurementPrediction();
+    test.testRadarMeasurementUpdate();
     return 0;
 }
 

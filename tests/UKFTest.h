@@ -33,6 +33,26 @@ public:
      */
     void testPredictMeanAndCovariance();
 
+    /**
+     * Run the radar measurement prediction test.
+     */
+    void testRadarMeasurementPrediction();
+
+    /**
+     * Run the radar measurement update test.
+     */
+    void testRadarMeasurementUpdate();
+
+    /**
+     * Run the lidar measurement prediction test.
+     */
+    void testLidarMeasurementPrediction();
+
+    /**
+     * Run the lidar measurement update test.
+     */
+    void testLidarMeasurementUpdate();
+
 private:
 
     /**

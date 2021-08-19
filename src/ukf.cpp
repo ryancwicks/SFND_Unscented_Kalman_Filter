@@ -56,25 +56,21 @@ UKF::UKF() :
 
 UKF::~UKF() {}
 
-void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
-  /**
-   * TODO: Complete this function! Make sure you switch between lidar and radar
-   * measurements.
-   */
+void UKF::ProcessMeasurement(const MeasurementPackage& meas_package) {
+  if (use_laser_ && meas_package.sensor_type_ == MeasurementPackage::LASER ) {
+    UpdateLidar(meas_package);
+  } else if (use_radar_ && meas_package.sensor_type_ == MeasurementPackage::RADAR) {
+    UpdateRadar(meas_package);
+  }
 }
 
 void UKF::Prediction(double delta_t) {
-  /**
-   * TODO: Complete this function! Estimate the object's location. 
-   * Modify the state vector, x_. Predict sigma points, the state, 
-   * and the state covariance matrix.
-   */
-
-  MatrixXd Xsig_aug;
-  generateAugmentedSigmaPointMatrix(Xsig_aug);
-  generateSigmaPointPrediction(Xsig_aug, delta_t);
-  generatePredictedMeanAndCovariance();
-  
+  if (is_initialized_) {
+    MatrixXd Xsig_aug;
+    generateAugmentedSigmaPointMatrix(Xsig_aug);
+    generateSigmaPointPrediction(Xsig_aug, delta_t);
+    generatePredictedMeanAndCovariance();
+  }
 }
 
 
@@ -170,8 +166,6 @@ void UKF::generateSigmaPointPrediction ( const Eigen::MatrixXd & Xsig_aug, doubl
 }
 
 void UKF::generatePredictedMeanAndCovariance() {
-  // predict state mean
-  
   x_ = VectorXd::Zero(n_x_);
   P_ = MatrixXd::Zero(n_x_, n_x_);
 
@@ -183,7 +177,7 @@ void UKF::generatePredictedMeanAndCovariance() {
     }
 }
 
-void UKF::UpdateLidar(MeasurementPackage meas_package) {
+void UKF::UpdateLidar(const MeasurementPackage& meas_package) {
   /**
    * TODO: Complete this function! Use lidar data to update the belief 
    * about the object's position. Modify the state vector, x_, and 
@@ -192,11 +186,19 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
    */
 }
 
-void UKF::UpdateRadar(MeasurementPackage meas_package) {
+void UKF::predictLidarMeasurement( Eigen::VectorXd & z_out, Eigen::MatrixXd & S_out) {
+
+}
+
+void UKF::UpdateRadar(const MeasurementPackage& meas_package) {
   /**
    * TODO: Complete this function! Use radar data to update the belief 
    * about the object's position. Modify the state vector, x_, and 
    * covariance, P_.
    * You can also calculate the radar NIS, if desired.
    */
+}
+
+void UKF::predictRadarMeasurement( Eigen::VectorXd & z_out, Eigen::MatrixXd & S_out) {
+
 }
