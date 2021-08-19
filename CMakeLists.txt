@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
-add_definitions(-std=c++11)
+add_definitions(-std=c++14)
 
 set(CXX_FLAGS "-Wall")
 set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
@@ -10,6 +10,7 @@ project(playback)
 find_package(PCL 1.2 REQUIRED)
 
 include_directories(${PCL_INCLUDE_DIRS})
+include_directories(${CMAKE_SOURCE_DIR}/src/)
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 list(REMOVE_ITEM PCL_LIBRARIES "vtkproj4")
@@ -17,6 +18,8 @@ list(REMOVE_ITEM PCL_LIBRARIES "vtkproj4")
 
 add_executable (ukf_highway src/main.cpp src/ukf.cpp src/tools.cpp src/render/render.cpp)
 target_link_libraries (ukf_highway ${PCL_LIBRARIES})
+
+add_executable (ukf_test src/ukf.cpp tests/UKFTest.cpp tests/main.cpp)
 
 
 

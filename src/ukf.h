@@ -70,19 +70,19 @@ class UKF {
   double std_yawdd_;
 
   // Laser measurement noise standard deviation position1 in m
-  double std_laspx_;
+  const static double std_laspx_;
 
   // Laser measurement noise standard deviation position2 in m
-  double std_laspy_;
+  const static double std_laspy_;
 
   // Radar measurement noise standard deviation radius in m
-  double std_radr_;
+  const static double std_radr_;
 
   // Radar measurement noise standard deviation angle in rad
-  double std_radphi_;
+  const static double std_radphi_;
 
   // Radar measurement noise standard deviation radius change in m/s
-  double std_radrd_ ;
+  const static double std_radrd_ ;
 
   // Weights of sigma points
   Eigen::VectorXd weights_;
@@ -95,6 +95,28 @@ class UKF {
 
   // Sigma point spreading parameter
   double lambda_;
+
+  protected:
+
+    /**
+     * Function to generate sigma points (not actually used, kept for completeness).
+     * @param Xsig [in/out] sigma point matrix, returned by reference
+     */
+    void generateSigmaPointMatrix( Eigen::MatrixXd & Xsig);
+
+    /**
+     * Function to generate augmented sigma points .
+     * @param Xsig_aug [in/out] augmented sigma point matrix, returned by reference
+     */
+    void generateAugmentedSigmaPointMatrix( Eigen::MatrixXd & Xsig_aug);
+
+    /**
+     * Predict sigma points for update step. Stores the result in the class Xsig_pred_ variable.
+     * @param Xsig_aug [in] augmented sigma point matrix
+     * @param delta_t [in] time step in seconds
+     */
+    void generateSigmaPointPrediction ( const Eigen::MatrixXd & Xsig_aug, double delta_t);
+
 };
 
 #endif  // UKF_H
