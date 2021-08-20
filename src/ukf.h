@@ -45,6 +45,12 @@ class UKF {
   // Augmented state dimension
   int n_aug_;
 
+  // measurement dimension radar
+  int n_z_radar_;
+
+  // measurement dimension lidar
+  int n_z_lidar_;
+  
   // state vector: [pos1 pos2 vel_abs yaw_angle yaw_rate] in SI units and rad
   Eigen::VectorXd x_;
 

@@ -186,7 +186,52 @@ void UKFTest::testPredictMeanAndCovariance() {
 
 void UKFTest::testRadarMeasurementPrediction() {
     std::cout << "Testing Radar measurement prediction..." << std::endl;
-    std::cout << "Radar measurement prediction test NOT IMPLEMENTED" << std::endl;
+
+    // radar measurement noise standard deviation radius in m
+    //double std_radr = 0.3;
+
+    // radar measurement noise standard deviation angle in rad
+    //double std_radphi = 0.0175;
+
+    // radar measurement noise standard deviation radius change in m/s
+    //double std_radrd = 0.1;
+
+    // create example matrix with predicted sigma points
+    Xsig_pred_ = MatrixXd(n_x_, 2 * n_aug_ + 1);
+    Xsig_pred_ <<
+         5.9374,  6.0640,   5.925,  5.9436,  5.9266,  5.9374,  5.9389,  5.9374,  5.8106,  5.9457,  5.9310,  5.9465,  5.9374,  5.9359,  5.93744,
+           1.48,  1.4436,   1.660,  1.4934,  1.5036,    1.48,  1.4868,    1.48,  1.5271,  1.3104,  1.4787,  1.4674,    1.48,  1.4851,    1.486,
+          2.204,  2.2841,  2.2455,  2.2958,   2.204,   2.204,  2.2395,   2.204,  2.1256,  2.1642,  2.1139,   2.204,   2.204,  2.1702,   2.2049,
+         0.5367, 0.47338, 0.67809, 0.55455, 0.64364, 0.54337,  0.5367, 0.53851, 0.60017, 0.39546, 0.51900, 0.42991, 0.530188,  0.5367, 0.535048,
+          0.352, 0.29997, 0.46212, 0.37633,  0.4841, 0.41872,   0.352, 0.38744, 0.40562, 0.24347, 0.32926,  0.2214, 0.28687,   0.352, 0.318159;
+
+    VectorXd z_expt = VectorXd(n_z_radar_);
+    z_expt <<  6.12155, 0.245993, 2.10313;
+    MatrixXd S_expt (n_z_radar_, n_z_radar_);
+    S_expt <<   0.0946171, -0.000139448, 0.00407016,
+                -0.000139448, 0.0012113, -0.000770652,
+                0.00407016, -0.000770652, 0.0980917;
+
+    VectorXd z_out;
+    MatrixXd S_out;
+
+    predictRadarMeasurement(z_out, S_out);
+
+    assert (z_out.size() == z_expt.size());
+    for (auto i = 0; i < z_out.rows(); ++i) {
+        assert (almostEqual(z_out(i), z_expt(i)));
+    }
+    assert (S_out.size() == S_expt.size());
+    assert (S_out.cols() == S_expt.cols());
+    assert (S_out.rows() == S_expt.rows());
+    for (auto row = 0; row < S_out.rows(); ++row) {
+        for (auto col = 0; col < S_out.cols(); ++col) {
+            assert(almostEqual(S_out(row, col), S_expt(row, col)));
+        }
+    }
+
+
+    std::cout << "Radar measurement prediction test passed" << std::endl;
 }
 
 void UKFTest::testRadarMeasurementUpdate() {

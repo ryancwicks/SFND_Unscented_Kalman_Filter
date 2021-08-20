@@ -35,6 +35,8 @@ UKF::UKF() :
   use_radar_ (true),
   n_x_(5),
   n_aug_(7),
+  n_z_radar_(3),
+  n_z_lidar_(2),
   // initial state vector
   x_ (VectorXd(n_x_)),
   // initial covariance matrix
@@ -200,5 +202,43 @@ void UKF::UpdateRadar(const MeasurementPackage& meas_package) {
 }
 
 void UKF::predictRadarMeasurement( Eigen::VectorXd & z_out, Eigen::MatrixXd & S_out) {
+  // create matrix for sigma points in measurement space
+    MatrixXd Zsig = MatrixXd(n_z_radar_, 2 * n_aug_ + 1);
 
+    // mean predicted measurement
+    z_out = VectorXd(n_z_radar_);
+  
+    // measurement covariance matrix S
+    S_out = MatrixXd(n_z_radar_,n_z_radar_);
+
+    // transform sigma points into measurement space
+    for (int i = 0; i < 2*n_aug_+1; ++i) {
+        double px = Xsig_pred_.col(i)[0];
+        double py = Xsig_pred_.col(i)[1];
+        double v = Xsig_pred_.col(i)[2];
+        double psi = Xsig_pred_.col(i)[3];
+        double psi_d = Xsig_pred_.col(i)[4];
+      
+        //assume the radius can never be 0 (px, py == 0)
+      
+        double r = sqrt(px*px + py*py);
+        double theta = atan2(py, px);
+        double r_d = v / r * (px*cos(psi) + py*sin(psi));
+  
+        Zsig.col(i) << r, theta, r_d;
+    }
+  
+    // calculate mean predicted measurement
+    z_out = VectorXd::Zero(n_z_radar_);
+    for (int i = 0; i < 2*n_aug_+1; ++i){
+        z_out += weights_[i] * Zsig.col(i);
+    }
+    S_out = MatrixXd::Zero(n_z_radar_, n_z_radar_);
+    for (int i = 0; i < 2*n_aug_+1; ++i) {
+        S_out += weights_[i] * (Zsig.col(i) - z_out)*(Zsig.col(i) - z_out).transpose();
+    }
+  
+    MatrixXd R = MatrixXd(n_z_radar_, n_z_radar_);
+    R << std_radr_*std_radr_, 0, 0, 0, std_radphi_*std_radphi_, 0, 0, 0, std_radrd_*std_radrd_;
+    S_out += R;
 }
