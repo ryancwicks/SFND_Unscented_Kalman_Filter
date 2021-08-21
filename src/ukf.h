@@ -90,6 +90,9 @@ class UKF {
   // Sigma point spreading parameter
   double lambda_;
 
+  //Measurement matrix for the laser.
+  Eigen::MatrixXd H_laser_; 
+
   protected:
 
     /**
@@ -118,7 +121,7 @@ class UKF {
 
     /**
      * Updates the state and the state covariance matrix using a laser measurement with 
-     * a UKF update
+     * a UKF update. Not used in this project.
      * @param meas_package The measurement at k+1
      */
     void UpdateLidarUKF(const MeasurementPackage& meas_package);
@@ -145,7 +148,7 @@ class UKF {
     void predictRadarMeasurement( Eigen::VectorXd & z_out, Eigen::MatrixXd & S_out, Eigen::MatrixXd & Z_sig);
 
     /**
-     * Get the predicted LIDAR measurement state. UKF model.
+     * Get the predicted LIDAR measurement state. UKF model. Not used in this project.
      * @param z_out [out] predicted lidar measurement mean
      * @param X_out [out] predicted lidar covariance state
      */

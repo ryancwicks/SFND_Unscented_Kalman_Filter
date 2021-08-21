@@ -1,6 +1,5 @@
 #include "ukf.h"
 #include "Eigen/Dense"
-#include <iostream>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -48,13 +47,17 @@ UKF::UKF() :
   std_yawdd_ (1.0),
   //weights
   weights_(VectorXd(2*n_aug_+1)),
-  lambda_(3.0 - n_aug_)
+  lambda_(3.0 - n_aug_),
+  H_laser_(MatrixXd (n_z_lidar_, n_x_))
 {
   // set weights
   weights_(0) = lambda_ / (lambda_ + n_aug_);
   for (int i = 1; i < 2*n_aug_+1; ++i){
     weights_[i] = 1./2./(lambda_+n_aug_);
   }
+  //set up the laser measurement matrix
+  H_laser_ << 1.0, 0.0, 0.0, 0.0, 0.0,
+       0.0, 1.0, 0.0, 0.0, 0.0;
 }
 
 UKF::~UKF() {}
@@ -92,10 +95,10 @@ void UKF::ProcessMeasurement(const MeasurementPackage& meas_package) {
 
 void UKF::Prediction(double delta_t) {
   MatrixXd Xsig_aug;
+  //This needs to be run before every measurement, even if delta_t == 0, to update the sigma point matrix from the last run.
   generateAugmentedSigmaPointMatrix(Xsig_aug);
   generateSigmaPointPrediction(Xsig_aug, delta_t);
   generatePredictedMeanAndCovariance();
-
 }
 
 
@@ -186,11 +189,7 @@ void UKF::generateSigmaPointPrediction ( const Eigen::MatrixXd & Xsig_aug, doubl
           Xsig_pred_.col(i)(3) += psi_d * delta_t + 1.0/2.0*delta_t*delta_t*mu_psi_dd;
           Xsig_pred_.col(i)(4) += delta_t * mu_psi_dd;
       } 
-
-      //Xsig_pred_.col(i)(3) = Xsig_pred_.col(i)(3) - int64_t(Xsig_pred_.col(i)(3) / (2*M_PI)) * 2.0*M_PI; 
-      //Xsig_pred_.col(i)(4) = Xsig_pred_.col(i)(4) - int64_t(Xsig_pred_.col(i)(4) / (2*M_PI)) * 2.0*M_PI;
   }
-
 }
 
 void UKF::generatePredictedMeanAndCovariance() {
@@ -218,21 +217,16 @@ void UKF::UpdateLidarLinear(const MeasurementPackage& meas_package) {
   VectorXd z_pred;
   MatrixXd S;
 
-  //set up the measurement matrix
-  MatrixXd H = MatrixXd (n_z_lidar_, n_x_);
-  H << 1.0, 0.0, 0.0, 0.0, 0.0,
-       0.0, 1.0, 0.0, 0.0, 0.0;
-
   predictLidarMeasurementLinear(z_pred, S);
 
   // calculate Kalman gain K;
   MatrixXd K;
-  K = P_*H.transpose()*S.inverse();
+  K = P_*H_laser_.transpose()*S.inverse();
 
   // update state mean and covariance matrix
   VectorXd z_diff = meas_package.raw_measurements_-z_pred;
   x_ += K*(z_diff);
-  P_ -= K*H*P_;
+  P_ -= K*H_laser_*P_;
 }
 
 void UKF::predictLidarMeasurementLinear( Eigen::VectorXd & z_out, Eigen::MatrixXd & S_out) {
@@ -243,18 +237,13 @@ void UKF::predictLidarMeasurementLinear( Eigen::VectorXd & z_out, Eigen::MatrixX
   // measurement covariance matrix S
   S_out = MatrixXd(n_z_lidar_, n_z_lidar_);
 
-  //set up the measurement matrix
-  MatrixXd H = MatrixXd (n_z_lidar_, n_x_);
-  H << 1.0, 0.0, 0.0, 0.0, 0.0,
-       0.0, 1.0, 0.0, 0.0, 0.0;
-
   //measured noise covariance matrix
   MatrixXd R = MatrixXd(n_z_lidar_, n_z_lidar_);
   R << std_laspx_*std_laspx_, 0, 
        0, std_laspy_*std_laspy_;
 
-  z_out = H*x_;
-  S_out = H*P_*H.transpose() + R;
+  z_out = H_laser_*x_;
+  S_out = H_laser_*P_*H_laser_.transpose() + R;
 }
 
 
