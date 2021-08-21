@@ -50,7 +50,7 @@ class UKF {
 
   // measurement dimension lidar
   int n_z_lidar_;
-  
+
   // state vector: [pos1 pos2 vel_abs yaw_angle yaw_rate] in SI units and rad
   Eigen::VectorXd x_;
 
@@ -117,10 +117,18 @@ class UKF {
     void generatePredictedMeanAndCovariance();
 
     /**
-     * Updates the state and the state covariance matrix using a laser measurement
+     * Updates the state and the state covariance matrix using a laser measurement with 
+     * a UKF update
      * @param meas_package The measurement at k+1
      */
-    void UpdateLidar(const MeasurementPackage& meas_package);
+    void UpdateLidarUKF(const MeasurementPackage& meas_package);
+
+    /**
+     * Updates the state and the state covariance matrix using a laser measurement with a 
+     * linear filter update.
+     * @param meas_package The measurement at k+1
+     */
+    void UpdateLidarLinear(const MeasurementPackage& meas_package);
 
     /**
      * Updates the state and the state covariance matrix using a radar measurement
@@ -132,15 +140,24 @@ class UKF {
      * Get the predicted radar measurement state.
      * @param z_out [out] predicted radar measurement mean
      * @param S_out [out] predicted radar covariance state
+     * @param Z_sig [out] sigma points in measurement space
      */
-    void predictRadarMeasurement( Eigen::VectorXd & z_out, Eigen::MatrixXd & S_out);
+    void predictRadarMeasurement( Eigen::VectorXd & z_out, Eigen::MatrixXd & S_out, Eigen::MatrixXd & Z_sig);
 
     /**
-     * Get the predicted LIDAR measurement state.
+     * Get the predicted LIDAR measurement state. UKF model.
      * @param z_out [out] predicted lidar measurement mean
      * @param X_out [out] predicted lidar covariance state
      */
-    void predictLidarMeasurement( Eigen::VectorXd & z_out, Eigen::MatrixXd & S_out);
+    void predictLidarMeasurementUKF( Eigen::VectorXd & z_out, Eigen::MatrixXd & S_out, Eigen::MatrixXd & Z_sig);
+
+    /**
+     * Get the predicted LIDAR measurement state. Linear model.
+     * @param z_out [out] predicted lidar measurement mean
+     * @param X_out [out] predicted lidar covariance state
+     */
+    void predictLidarMeasurementLinear( Eigen::VectorXd & z_out, Eigen::MatrixXd & S_out);
+
 
 };
 

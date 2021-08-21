@@ -94,6 +94,7 @@ public:
 			car3.setUKF(ukf3);
 		}
 		traffic.push_back(car3);
+		
 
 		lidar = new Lidar(traffic,0);
 	
